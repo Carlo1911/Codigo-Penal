@@ -12,6 +12,7 @@ import org.apache.jena.util.FileManager;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Selector;
 import org.apache.jena.rdf.model.SimpleSelector;
@@ -27,6 +28,7 @@ public class Consulta {
     static String NS = "https://www.codigopenalperu/#";
     static Model model = leerModelo();
     static InfModel inf = ModelFactory.createRDFSModel(model);
+    static Resource recurso = null;
 
     public static void main(String[] args) {
         //leerModelo();
@@ -34,31 +36,51 @@ public class Consulta {
 
         setDatos();
 
-        consultar();
+        //consultar();
     }
 
     public static void setDatos() {
 
-        String resourceURI = NS + "Pepe";
-        Resource Pepe = model.createResource(resourceURI);
+        Property CondicionNormal = model.getProperty(NS + "CondicionNormal");
+        Property CondicionAgravante = model.getProperty(NS + "CondicionAgravante");
 
-        resourceURI = NS + "PepeJr";
-        Resource PepeJr = model.createResource(resourceURI);
+        String CondicionNormal1 = "Familiar";
+        String CondicionAgravante1 = "PorFerocidadLucroCodiciaPlacer";
+        String CondicionAgravante2 = "ParaFacilitarOcultarOtroDelito";
+        String CondicionAgravante3 = "ConCrueldadOAlevosia";
+        String CondicionAgravante4 = "PorFuegoExplosionUOtroMedio";
 
-        resourceURI = NS + "Victima";
-        Resource Victima = model.getResource(resourceURI);
-        model.add(Pepe, RDF.type, Victima);
+        if (cumpleCondicion(CondicionNormal, CondicionNormal1)) {
+            System.out.println("Aplicar pena sin agravante");
+            System.out.println("POSIBLE DELITO: " + recurso);
 
-        resourceURI = NS + "Victimario";
-        Resource Victimario = model.getResource(resourceURI);
-        model.add(PepeJr, RDF.type, Victimario);
+            if (cumpleCondicion(CondicionAgravante, CondicionAgravante1)
+                    || cumpleCondicion(CondicionAgravante, CondicionAgravante2)
+                    || cumpleCondicion(CondicionAgravante, CondicionAgravante3)
+                    || cumpleCondicion(CondicionAgravante, CondicionAgravante4)) {
+                System.out.println("Aplicar pena con agravante");
 
-        String propertyURI = NS + "EsPadreDe";
-        Property EsPadreDe = model.getProperty(propertyURI);
+            }
+        } else {
+            //System.out.println("No es Parricidio");
+        }
 
-        model.add(Pepe, EsPadreDe, PepeJr);
-        
-        //descargarArchivo(model, "PersonasEditado");
+    }
+
+    public static boolean cumpleCondicion(Property condicion, String nombreCondicion) {
+        boolean cumple = false;
+        ResIterator resIter = model.listSubjectsWithProperty(condicion);
+        while (resIter.hasNext()) {
+            Resource res = resIter.nextResource();
+            String condicionEncontrada = res.getProperty(condicion).getString();
+            cumple = nombreCondicion.equals(condicionEncontrada);
+            if (cumple) {
+                recurso = res;
+            }
+            //System.out.println("Cumple condicion: " + cumple);
+        }
+
+        return cumple;
     }
 
     public static void consultar() {
@@ -84,7 +106,7 @@ public class Consulta {
     }
 
     public static Model leerModelo() {
-        String inputFileName = "CodigoPenalFinal.rdf";
+        String inputFileName = "CodigoPenalFinal_v4.rdf";
         Model modelo = FileManager.get().loadModel(inputFileName);
         return modelo;
 

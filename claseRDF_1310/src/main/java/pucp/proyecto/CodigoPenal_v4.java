@@ -182,6 +182,15 @@ public class CodigoPenal_v4 {
         agregarPropiedadARecurso(victimario, nombre, "CarloAlva");
         Property es = crearPropiedad(NS, "es", model);
         
+        //PAra Homicidio Calificado le agregamos las propiedades:
+        Property CondicionNormal = crearPropiedad(NS, "CondicionNormal", model);
+        Property CondicionAgravante = crearPropiedad(NS, "CondicionAgravante", model);
+        
+        parricidio.addProperty(CondicionNormal, "Familiar");
+        parricidio.addProperty(CondicionAgravante, "PorFerocidadLucroCodiciaPlacer");
+        parricidio.addProperty(CondicionAgravante, "ParaFacilitarOcultarOtroDelito");
+        parricidio.addProperty(CondicionAgravante, "ConCrueldadOAlevosia");
+        parricidio.addProperty(CondicionAgravante, "PorFuegoExplosionUOtroMedio");
     }
 
     public static void agregarPropiedadARecurso(Resource resource, Property property, String value){
