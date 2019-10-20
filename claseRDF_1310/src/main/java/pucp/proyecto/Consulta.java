@@ -12,12 +12,13 @@ import org.apache.jena.util.FileManager;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Property;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.Selector;
 import org.apache.jena.rdf.model.SimpleSelector;
 import org.apache.jena.rdf.model.StmtIterator;
-import org.apache.jena.vocabulary.RDF;
+import org.apache.jena.vocabulary.RDFS;
 
 /**
  *
@@ -35,7 +36,7 @@ public class Consulta {
         //inf = ModelFactory.createRDFSModel(model);
 
         setDatos();
-
+        getTodosLosDelitos();
         //consultar();
     }
 
@@ -102,6 +103,18 @@ public class Consulta {
         while (iter.hasNext()) {
             System.out.println("******");
             System.out.println(iter.nextStatement().toString());
+        }
+    }
+
+    public static void getTodosLosDelitos() {
+
+        Resource delito= model.getResource(NS+"Homicidio");
+        Selector selector = new SimpleSelector(null, RDFS.subClassOf, delito);// .listSubjectsWithProperty(condicion);
+        StmtIterator resIter =inf.listStatements(selector);
+        
+        while (resIter.hasNext()) {
+            String res = resIter.nextStatement().toString();
+            System.out.println("TIPOS DE DELITOS " + res);
         }
     }
 
